@@ -12,3 +12,7 @@ var Stamen_TonerLite = L.tileLayer('http://stamen-tiles-{s}.a.ssl.fastly.net/ton
   maxZoom: 20,
   ext: 'png'
 }).addTo(map);
+
+
+var geojsonLayer = new L.GeoJSON.AJAX("dat.geojson");
+geojsonLayer.addTo(map);
