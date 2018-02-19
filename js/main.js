@@ -1,22 +1,19 @@
 /* =====================
 Main class to read and map bus shetlers
 ===================== */
+
+
+
 var map = L.map("map", {
   center: [39.9522, -75.1639],
   zoom: 15
 });
-var Stamen_TonerLite = L.tileLayer(
-  "http://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}",
-  {
-    attribution:
-      'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: "abcd",
-    minZoom: 0,
-    maxZoom: 20,
-    ext: "png"
-  }
-).addTo(map);
 
+var Thunderforest_Transport = L.tileLayer('https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=39079820db6845f79a313d7d4724e1a9', {
+	attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	apikey: '<your apikey>',
+	maxZoom: 22
+}).addTo(map);
 
 // transfer geojson to a simple object with an array of bus stops
 var allStops = [];
@@ -41,7 +38,7 @@ for (i = 0; i < allStops.length - 1; i++) {
     L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
       .bindPopup('Stop ID: ' + allStops[i].Stopid +  '   Stop Name: ' + allStops[i].Stop_Name +
       '   Ridership: ' + allStops[i].Ridership + '   Direction: ' + allStops[i].Direction +
-      '   Shelter Stus: ' + allStops[i].Status
+      '   Shelter Status: ' + allStops[i].STATUS
     )
       .addTo(map);
   }
