@@ -46,3 +46,21 @@ var allStops = [];
 for (var i = 0; i < dat[0].features.length; i++ ) {
     allStops[i] = dat[0].features[i].properties;
 }
+
+for (i = 0; i < allStops.length - 1; i++) {
+
+    // Constructing the styling  options for our map
+    if (allStops[i].STATUS === 'Replaced'){
+      color = '#0000FF';
+    } else if (allStops[i].STATUS === 'New') {
+      color = '#00FF00';
+    } else {
+      color = '##FF0000';
+    }
+    // The style options
+    var pathOpts = {'radius': allStops[i].Ridership * 2,
+                    'fillColor': color};
+    L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
+      .bindPopup('Stop ID: ' + allStops[i].Stopid, 'Stop Name: ' + allStops[i].Stop_Name)
+      .addTo(map);
+  }
