@@ -39,8 +39,9 @@ for (i = 0; i < allStops.length - 1; i++) {
     var pathOpts = {'radius': allStops[i].Ridership * 1.5, 'fillColor': color};
 
     L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
-      .bindPopup('Stop ID: ' + allStops[i].Stopid +  '   Stop Name: ' + allStops[i].Stop_Name + 
-      '   Ridership: ' + allStops[i].Ridership + '   Direction: ' + allStops[i].Direction
+      .bindPopup('Stop ID: ' + allStops[i].Stopid +  '   Stop Name: ' + allStops[i].Stop_Name +
+      '   Ridership: ' + allStops[i].Ridership + '   Direction: ' + allStops[i].Direction +
+      '   Shelter Stus: ' + allStops[i].Status
     )
       .addTo(map);
   }
