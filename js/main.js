@@ -21,6 +21,12 @@ for (var i = 0; i < dat[0].features.length; i++ ) {
     allStops[i] = dat[0].features[i].properties;
 }
 
+// normalization function
+//function(val, max, min) { return (val - min) / (max - min); }
+//const norm = (val, max, min) => (val - min) / (max - min);
+//const norm = (val, max, min) => Math.max(0, Math.min(1, (val-min) / (max-min)));
+
+
 for (i = 0; i < allStops.length - 1; i++) {
 
     // Constructing the styling  options for our map
@@ -33,12 +39,12 @@ for (i = 0; i < allStops.length - 1; i++) {
     }
 
     // The style options
-    var pathOpts = {'radius': allStops[i].Ridership * 1.5, 'fillColor': color};
+    //var pathOpts = {'radius': norm(allStops[i].Average_Bo, 100000, 1)*10, 'fillColor': color}; // working on scaling correctly
+    var pathOpts = {'radius': allStops[i].Ridership * 1.75, 'fillColor': color};
 
     L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
       .bindPopup('Stop ID: ' + allStops[i].Stopid +  '   Stop Name: ' + allStops[i].Stop_Name +
-      '   Ridership: ' + allStops[i].Ridership + '   Direction: ' + allStops[i].Direction +
-      '   Shelter Status: ' + allStops[i].STATUS
-    )
+      '   Ridership: ' + allStops[i].Average_Bo + '   Direction: ' + allStops[i].Direction +
+      '   Shelter Status: ' + allStops[i].STATUS)
       .addTo(map);
   }
