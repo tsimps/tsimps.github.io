@@ -35,7 +35,7 @@ for (i = 0; i < allStops.length - 1; i++) {
   } else if (allStops[i].STATUS === "New") {
     color = "#AB47BC";
   } else if (allStops[i].STATUS === "Existing") {
-    color = "#26A69A";
+    color = "#9CCC65";
   } else {
     color = "#78909C";
   }
