@@ -2,6 +2,7 @@
 Main class to read and map bus shetlers
 ===================== */
 
+// creat transit and aerial basemap versions to be controlled with boxes
 var Thunderforest_Transport = L.tileLayer(
   "https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=39079820db6845f79a313d7d4724e1a9",
   {
@@ -20,6 +21,7 @@ var Esri_WorldImagery = L.tileLayer(
   }
 );
 
+// set up the map; make transit basemap the default
 var map = L.map("map", {
   center: [39.9522, -75.1639],
   zoom: 15,
@@ -32,8 +34,15 @@ for (var i = 0; i < dat[0].features.length; i++) {
   allStops[i] = dat[0].features[i].properties;
 }
 
-// normalization function
-//function(val, max, min) { return (val - min) / (max - min); }
+// normalization the ridership to scale the markers
+normalize = val => {
+  var x;
+  if (val < 10) {x = 3;}
+  else {
+    x = Math.sqrt(val);
+  }
+  //if (val > 10) {x = Math.sqrt(val);}
+  return (x);};
 //const norm = (val, max, min) => (val - min) / (max - min);
 //const norm = (val, max, min) => Math.max(0, Math.min(1, (val-min) / (max-min)));
 
@@ -52,7 +61,8 @@ for (i = 0; i < allStops.length - 1; i++) {
   // The style options
   //var pathOpts = {'radius': norm(allStops[i].Average_Bo, 100000, 1)*10, 'fillColor': color}; // working on scaling correctly
   var pathOpts = {
-    radius: allStops[i].Ridership * 1.75,
+    //radius: allStops[i].Ridership * 1.75,
+    radius: normalize(allStops[i].Average_Bo),
     fillColor: color,
     stroke: false,
     fillOpacity: 0.8
@@ -126,10 +136,11 @@ var empty = [];
 var indegoIcon = L.icon({
   iconUrl: "js/images/marker-0@2x.png",
   iconSize: [30, 45]
-  //iconAnchor: [22, 94],
 });
 
+// implement helper functions to call and wait for ajax download of json
 downloadData(indegoLink).done(function(response) {
+  // create layer group of station markers
   stations = L.layerGroup(
     _.map(response.features, function(feature) {
       return L.marker(
@@ -139,9 +150,10 @@ downloadData(indegoLink).done(function(response) {
     })
   );
 
+  // indego layer control system
   indegoLayer = {
     Indego: stations,
-    Off: empty
+    Off: empty // error thrown here but no loss in functionality
   };
   L.control.layers(indegoLayer).addTo(map);
 });
