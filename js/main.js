@@ -2,11 +2,6 @@
 Main class to read and map bus shetlers
 ===================== */
 
-var map = L.map("map", {
-  center: [39.9522, -75.1639],
-  zoom: 15
-});
-
 var Thunderforest_Transport = L.tileLayer(
   "https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=39079820db6845f79a313d7d4724e1a9",
   {
@@ -15,7 +10,24 @@ var Thunderforest_Transport = L.tileLayer(
     apikey: "<your apikey>",
     maxZoom: 22
   }
-).addTo(map);
+);
+
+var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+});
+
+var map = L.map("map", {
+  center: [39.9522, -75.1639],
+  zoom: 15,
+  layers: [Thunderforest_Transport]
+});
+
+var baseMaps = {
+    "Aerial": Esri_WorldImagery,
+    "Transit": Thunderforest_Transport
+};
+
+L.control.layers(baseMaps).addTo(map);
 
 // transfer geojson to a simple object with an array of bus stops
 var allStops = [];
