@@ -12,22 +12,19 @@ var Thunderforest_Transport = L.tileLayer(
   }
 );
 
-var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-});
+var Esri_WorldImagery = L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {
+    attribution:
+      "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community"
+  }
+);
 
 var map = L.map("map", {
   center: [39.9522, -75.1639],
   zoom: 15,
   layers: [Thunderforest_Transport]
 });
-
-var baseMaps = {
-    "Aerial": Esri_WorldImagery,
-    "Transit": Thunderforest_Transport
-};
-
-L.control.layers(baseMaps).addTo(map);
 
 // transfer geojson to a simple object with an array of bus stops
 var allStops = [];
@@ -62,10 +59,10 @@ for (i = 0; i < allStops.length - 1; i++) {
   };
 
   /* ============
-CRITICAL:
-L.circleMarker.bindPopup is only working in legacy Leaflet build 0.77
-Unable to update to current Leaflet build. Unsure why this is a problem.
-=============== */
+  CRITICAL:
+  L.circleMarker.bindPopup is only working in legacy Leaflet build 0.77
+  Unable to update to current Leaflet build. Unsure why this is a problem.
+  =============== */
   L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
     .bindPopup(
       "<b> Stop ID: </b>" +
@@ -91,3 +88,60 @@ Unable to update to current Leaflet build. Unsure why this is a problem.
     )
     .addTo(map);
 }
+
+//Basemap Layer control functionality
+var baseMaps = {
+  Aerial: Esri_WorldImagery,
+  Transit: Thunderforest_Transport
+};
+L.control.layers(baseMaps).addTo(map);
+
+/* ========
+INDEGO Data Layer import and project
+======== */
+// helper functions
+var downloadData = url => $.ajax(url);
+var parseData = dat => JSON.parse(dat.responseText);
+var makeMarkers = function(dat) {
+  var marks = [];
+  for (var i = 0; i < dat.features.length; i++) {
+    marks[i] = L.marker([
+      dat.features[i].geometry.coordinates[1],
+      dat.features[i].geometry.coordinates[0]
+    ]);
+  }
+
+  return marks;
+};
+var plotMarkers = function(markers) {
+  for (var n = 0; n < markers.length; n++) {
+    markers[n].addTo(map);
+  }
+};
+
+var indegoLink = "https://www.rideindego.com/stations/json/";
+var stations;
+var empty = [];
+
+var indegoIcon = L.icon({
+  iconUrl: "js/images/marker-0@2x.png",
+  iconSize: [30, 45]
+  //iconAnchor: [22, 94],
+});
+
+downloadData(indegoLink).done(function(response) {
+  stations = L.layerGroup(
+    _.map(response.features, function(feature) {
+      return L.marker(
+        [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
+        { icon: indegoIcon }
+      );
+    })
+  );
+
+  indegoLayer = {
+    Indego: stations,
+    Off: empty
+  };
+  L.control.layers(indegoLayer).addTo(map);
+});
