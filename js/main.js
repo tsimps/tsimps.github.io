@@ -163,12 +163,3 @@ downloadData(indegoLink).done(function(response) {
   };
   L.control.layers(indegoLayer).addTo(map);
 });
-
-/* ======
-L.control search feature
-
-var items = allStops;
-L.control.search({
-  data: items
-}).addTo(map);
-===== */
