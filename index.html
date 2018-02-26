@@ -14,18 +14,32 @@
   </style>
 </head>
 
+<script>
+var searchScript = function() {
+  var input = parseInt($( "input[id=number-input1]").val()); //.toUpperCase(
+  var same = _.where(allStops, {Stopid: input});
+  if (event.keyCode === 13) {
+    var latLngs = [ same[0].Latitude, same[0].Longitude];
+    map.panTo(latLngs);
+    map.setZoom(18);
+    // any way to open the pop up here?
+  }
+  return same;
+}
+</script>
+
 <body>
   <div class = "sidebar">
     <h1> Bus Shelter Mapping Project </h1>
     <p> T. Andrew Simpson </p>
     <p> Questions: mail@tandrewsimpson.com </p>
+    <p> <label id="number-label1" for="number-input1">Stop ID Search:</label> </p>
+    <p><input id="number-input1" class="input-number" style = "height: 24px; width: 250px" type="number" placeholder="Enter Stop ID then press 'enter'" value="" enabled onkeyup="searchScript()"> </p>
   </div>
 
+
   <div class = "map" id='map'></div>
-  <script>
 
-
-  </script>
 
   <!-- Javascript Imports Here -->
   <script src="js/leaflet.js"></script>
@@ -33,6 +47,7 @@
   <script src="js/underscore.js"></script>
   <script src="js/jquery-2.2.0.js"></script>
   <script src="data/compressed.js"></script>
+  <script src='js/search.js'></script>
   <script src="js/main.js"></script>
 </body>
 </html>

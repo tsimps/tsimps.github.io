@@ -8,7 +8,7 @@ var Thunderforest_Transport = L.tileLayer(
   {
     attribution:
       '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    apikey: "<your apikey>",
+    apikey: "39079820db6845f79a313d7d4724e1a9",
     maxZoom: 22
   }
 );
@@ -27,6 +27,8 @@ var map = L.map("map", {
   zoom: 15,
   layers: [Thunderforest_Transport]
 });
+map.zoomControl.setPosition('bottomleft');
+
 
 // transfer geojson to a simple object with an array of bus stops
 var allStops = [];
@@ -45,6 +47,20 @@ normalize = val => {
   return (x);};
 //const norm = (val, max, min) => (val - min) / (max - min);
 //const norm = (val, max, min) => Math.max(0, Math.min(1, (val-min) / (max-min)));
+
+var makeMarkers = function(dat) {
+  var marks = [];
+  for (var i = 0; i < dat.features.length; i++) {
+    marks[i] = L.circleMarker([
+      dat[i].Latitude,
+      dat[i].Longitude
+    ]);
+  }
+
+  return marks;
+};
+
+
 
 for (i = 0; i < allStops.length - 1; i++) {
   // Constructing the styling  options for our map
@@ -112,17 +128,7 @@ INDEGO Data Layer import and project
 // helper functions
 var downloadData = url => $.ajax(url);
 var parseData = dat => JSON.parse(dat.responseText);
-var makeMarkers = function(dat) {
-  var marks = [];
-  for (var i = 0; i < dat.features.length; i++) {
-    marks[i] = L.marker([
-      dat.features[i].geometry.coordinates[1],
-      dat.features[i].geometry.coordinates[0]
-    ]);
-  }
 
-  return marks;
-};
 var plotMarkers = function(markers) {
   for (var n = 0; n < markers.length; n++) {
     markers[n].addTo(map);
@@ -157,3 +163,12 @@ downloadData(indegoLink).done(function(response) {
   };
   L.control.layers(indegoLayer).addTo(map);
 });
+
+/* ======
+L.control search feature
+
+var items = allStops;
+L.control.search({
+  data: items
+}).addTo(map);
+===== */
