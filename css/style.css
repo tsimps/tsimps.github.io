@@ -14,9 +14,9 @@ p {
 }
 
 .map {
-  position: relative;
+  position: absolute;
   right: 0px;
-  left: 600px;
+  left: 400px;
   height: 100%;
   top: 0;
 }

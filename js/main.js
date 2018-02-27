@@ -23,7 +23,7 @@ var Esri_WorldImagery = L.tileLayer(
 
 // set up the map; make transit basemap the default
 var map = L.map("map", {
-  center: [39.9522, -75.1539],
+  center: [39.9522, -75.1639],
   zoom: 15,
   layers: [Thunderforest_Transport]
 });
