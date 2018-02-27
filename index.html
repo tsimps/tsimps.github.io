@@ -34,8 +34,13 @@ var searchScript = function() {
     <p> T. Andrew Simpson </p>
     <p> Questions: mail@tandrewsimpson.com </p>
     <p> Permanent Link: <a href="https://tsimps.github.io">https://tsimps.github.io</a> </p>
-    <p> <label id="number-label1" for="number-input1">Stop ID Search:</label> </p>
-    <p><input id="number-input1" class="input-number" style = "height: 24px; width: 250px" type="number" placeholder="Enter Stop ID then press 'enter'" value="" enabled onkeyup="searchScript()"> </p>
+    <p> Visualizes SEPTA Bus Stations by Ridership and Presence of a Shelter.
+        Built using Automated Passenger Count data, wrangled and analyzed in R,
+        exported to JSON and mapped used the Leaflet javascript library.
+        User can search by Stop ID and change basemap layer as well as toggle
+        Indego stations on and off. </p>
+    <h3> <label id="number-label1" for="number-input1">Search by Stop ID:</label>
+    <input id="number-input1" class="input-number" style = "height: 24px; width: 250px" type="number" placeholder="Enter Stop ID then press 'enter'" value="" enabled onkeyup="searchScript()"> </>
   </div>
 
 

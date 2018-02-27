@@ -1,10 +1,15 @@
 body {
   padding: 0;
   overflow: hidden;
-  font-family: helvetica;
+  font-family: helvetica, arial, sans-serif;
 }
 
 h1 {
+  padding-top: 25px;
+  padding-left: 25px;
+}
+
+.sidebar h3 {
   padding-top: 25px;
   padding-left: 25px;
 }
