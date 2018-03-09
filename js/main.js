@@ -93,7 +93,7 @@ $.getJSON(jsonLink).done(function(data) {
           feature.properties.Stopid +
           "<br><b>Stop Name: </b>" +
           feature.properties.Stop_Name +
-          "<br><b>Spring '15-'17 Average Boardings Per Day: </b>" +
+          "<br><b>Spring '14-'17 Average Boardings Per Day: </b>" +
           Math.round(feature.properties.avg_boards) +
           "<br><b>Direction: </b>" +
           feature.properties.Direction +
