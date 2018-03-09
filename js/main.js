@@ -27,8 +27,10 @@ var map = L.map("map", {
   zoom: 15,
   layers: [Thunderforest_Transport]
 });
-map.zoomControl.setPosition('bottomleft');
+map.zoomControl.setPosition("bottomleft");
 
+var jsonLink =
+  "https://raw.githubusercontent.com/tsimps/tsimps.github.io/master/data/shelter_layer.geojson";
 
 // transfer geojson to a simple object with an array of bus stops
 var allStops = [];
@@ -39,81 +41,80 @@ for (var i = 0; i < dat[0].features.length; i++) {
 // normalization the ridership to scale the markers
 normalize = val => {
   var x;
-  if (val < 10) {x = 3;}
+  if(isNaN(val)) { x = 2;}
   else {
-    x = Math.sqrt(val);
+    if (val < 10) {
+      x = 3;
+    } else {
+      x = Math.sqrt(val);
+    }
+    //if (val > 10) {x = Math.sqrt(val);}
   }
-  //if (val > 10) {x = Math.sqrt(val);}
-  return (x);};
-//const norm = (val, max, min) => (val - min) / (max - min);
-//const norm = (val, max, min) => Math.max(0, Math.min(1, (val-min) / (max-min)));
-
-var makeMarkers = function(dat) {
-  var marks = [];
-  for (var i = 0; i < dat.features.length; i++) {
-    marks[i] = L.circleMarker([
-      dat[i].Latitude,
-      dat[i].Longitude
-    ]);
-  }
-
-  return marks;
+  return x;
 };
 
+/* ============
+CRITICAL:
+L.circleMarker.bindPopup is only working in legacy Leaflet build 0.77
+Unable to update to current Leaflet build. Unsure why this is a problem.
+=============== */
+var stops;
+
+$.getJSON(jsonLink).done(function(data) {
+  var json = data;
+  //console.log("JSON", json);
+
+  // create layer group of station markers
+  stops = L.layerGroup(
+    _.map(json.features, function(feature) {
+
+      if (feature.properties.STATUS === "Replaced") {
+        color = "#EC407A";
+      } else if (feature.properties.STATUS === "New") {
+        color = "#AB47BC";
+      } else if (feature.properties.STATUS === "Existing") {
+        color = "#9CCC65";
+      } else {
+        color = "#78909C";
+      }
+
+      var pathOpts = {
+        //radius: allStops[i].Ridership * 1.75,
+        radius: normalize(feature.properties.avg_boards),
+        fillColor: color,
+        stroke: false,
+        fillOpacity: 0.8
+      };
 
 
-for (i = 0; i < allStops.length - 1; i++) {
-  // Constructing the styling  options for our map
-  if (allStops[i].STATUS === "Replaced") {
-    color = "#EC407A";
-  } else if (allStops[i].STATUS === "New") {
-    color = "#AB47BC";
-  } else if (allStops[i].STATUS === "Existing") {
-    color = "#9CCC65";
-  } else {
-    color = "#78909C";
-  }
-
-  // The style options
-  //var pathOpts = {'radius': norm(allStops[i].Average_Bo, 100000, 1)*10, 'fillColor': color}; // working on scaling correctly
-  var pathOpts = {
-    //radius: allStops[i].Ridership * 1.75,
-    radius: normalize(allStops[i].Average_Bo),
-    fillColor: color,
-    stroke: false,
-    fillOpacity: 0.8
-  };
-
-  /* ============
-  CRITICAL:
-  L.circleMarker.bindPopup is only working in legacy Leaflet build 0.77
-  Unable to update to current Leaflet build. Unsure why this is a problem.
-  =============== */
-  L.circleMarker([allStops[i].Latitude, allStops[i].Longitude], pathOpts)
-    .bindPopup(
-      "<b> Stop ID: </b>" +
-        allStops[i].Stopid +
-        "<br><b>Stop Name: </b>" +
-        allStops[i].Stop_Name +
-        "<br><b>Spring '15-'17 Average Boardings Per Day: </b>" +
-        allStops[i].Average_Bo +
-        "<br><b>Direction: </b>" +
-        allStops[i].Direction +
-        "<br><b>Shelter Status: </b>" +
-        allStops[i].STATUS +
-        "<br><b>Install Date: </b>" +
-        allStops[i].INSTALL_DA +
-        "<br><b>Digital: </b>" +
-        allStops[i].DIGITAL +
-        "<br><b>Shelter Type: </b>" +
-        allStops[i].NEW_TYPE +
-        "<br><b>Score: </b>" +
-        allStops[i].Total_Scor +
-        "<br><b>Votes for New Shelter: </b>" +
-        allStops[i].VOTES
-    )
-    .addTo(map);
-}
+      return L.circleMarker( [feature.properties.Latitude, feature.properties.Longitude], pathOpts )
+      .bindPopup(
+        "<b> Stop ID: </b>" +
+          feature.properties.Stopid +
+          "<br><b>Stop Name: </b>" +
+          feature.properties.Stop_Name +
+          "<br><b>Spring '15-'17 Average Boardings Per Day: </b>" +
+          Math.round(feature.properties.avg_boards) +
+          "<br><b>Direction: </b>" +
+          feature.properties.Direction +
+          "<br><b>Shelter Status: </b>" +
+          feature.properties.STATUS +
+          "<br><b>Install Date: </b>" +
+          feature.properties["INSTALL DATE"] +
+          "<br><b>Digital: </b>" +
+          feature.properties.DIGITAL +
+          "<br><b>Shelter Type: </b>" +
+          feature.properties["NEW TYPE"] +
+          "<br><b>Score: </b>" +
+          feature.properties["Total Score"] +
+          "<br><b>Votes for New Shelter: </b>" +
+          feature.properties.VOTES +
+          "<br><b>Routes that Stop Here: </b>" +
+          feature.properties.routeNumbers
+      ); // close bindPopup;
+    }) // close _.map()
+  ).addTo(map);
+});
 
 //Basemap Layer control functionality
 var baseMaps = {
@@ -125,9 +126,6 @@ L.control.layers(baseMaps).addTo(map);
 /* ========
 INDEGO Data Layer import and project
 ======== */
-// helper functions
-var downloadData = url => $.ajax(url);
-var parseData = dat => JSON.parse(dat.responseText);
 
 var plotMarkers = function(markers) {
   for (var n = 0; n < markers.length; n++) {
@@ -143,6 +141,9 @@ var indegoIcon = L.icon({
   iconUrl: "js/images/marker-0@2x.png",
   iconSize: [30, 45]
 });
+
+// helper functions
+var downloadData = url => $.ajax(url);
 
 // implement helper functions to call and wait for ajax download of json
 downloadData(indegoLink).done(function(response) {
